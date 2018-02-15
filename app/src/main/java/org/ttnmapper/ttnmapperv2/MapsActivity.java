@@ -14,7 +14,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,6 +32,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +51,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.TileOverlayOptions;
@@ -630,6 +634,37 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Log.e(TAG, "Style parsing failed.");
             }
 
+            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+                @Override
+                public View getInfoWindow(Marker arg0) {
+                    return null;
+                }
+
+                @Override
+                public View getInfoContents(Marker marker) {
+
+                    Context context = MapsActivity.this;
+
+                    LinearLayout info = new LinearLayout(context);
+                    info.setOrientation(LinearLayout.VERTICAL);
+
+                    TextView title = new TextView(context);
+                    title.setTextColor(Color.BLACK);
+                    title.setTypeface(null, Typeface.BOLD);
+                    title.setText(marker.getTitle());
+
+                    TextView snippet = new TextView(context);
+                    snippet.setTextColor(Color.GRAY);
+                    snippet.setText(marker.getSnippet());
+
+                    info.addView(title);
+                    info.addView(snippet);
+
+                    return info;
+                }
+            });
+
             clearAndReaddAllToMap();
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, "Can't find style. Error: ", e);
@@ -785,7 +820,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         //update counters after adding a packet
-        TextView tv = (TextView) findViewById(R.id.textViewCounters);
+        TextView tv = findViewById(R.id.textViewCounters);
         if (gatewaysWithMarkers.isEmpty()) {
             tv.setText(String.format("%d packets", mApplication.packets.size()));
         } else {
@@ -815,9 +850,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         options.position(new LatLng(packet.getLatitude(), packet.getLongitude()));
         options.anchor((float) 0.5, (float) 0.5);
-        options.title("RSSI: " + packet.getMaxRssi() + "dBm\n" +
-                "SNR: " + packet.getMaxSnr() + "dB\n" +
-                "Gateways: " + packet.gateways.size());
+        options.title(packet.getFormattedTime());
+
+        if (packet.getGateways().size() > 1) {
+            options.snippet("Gateways: " + packet.getGateways().size() + "\n" +
+                    "RSSI: " + packet.getMaxRssi() + "dBm (max)\n" +
+                    "SNR: " + packet.getMaxSnr() + "dB (max)\n" +
+                    "Distance: " + Math.round(packet.getMaxDistance() * 100) / 100 + "m (max)"
+            );
+        } else if (packet.getGateways().size() == 1) {
+            options.snippet("Received by: " + packet.getGateways().get(0).gatewayID + "\n" +
+                    "RSSI: " + packet.getMaxRssi() + "dBm (max)\n" +
+                    "SNR: " + packet.getMaxSnr() + "dB (max)\n" +
+                    "Distance: " + Math.round(packet.getMaxDistance() * 100) / 100 + "m"
+            );
+        } else {
+            options.snippet("Received by unknown gateway!\n" +
+                    "RSSI: " + packet.getMaxRssi() + "dBm (max)\n" +
+                    "SNR: " + packet.getMaxSnr() + "dB (max)\n" +
+                    "Distance: " + Math.round(packet.getMaxDistance() * 100) / 100 + "m"
+            );
+        }
 
         mMap.addMarker(options);
         markersOnMap.add(options); //save a list of markers used for auto zooming

@@ -1,14 +1,23 @@
 package org.ttnmapper.ttnmapperv2;
 
 import android.location.Location;
+import android.text.TextUtils;
 
+import org.ttnmapper.ttnmapperv2.util.ISO8601DateParser;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by jpmeijers on 7-2-17.
  */
 
 public class Packet {
+    static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+
     /*
           "app_id":"jpm_testing",
           "dev_id":"arduino_uno_rn2483",
@@ -23,27 +32,27 @@ public class Packet {
             "data_rate":"SF7BW125",
             "coding_rate":"4/5",
      */
-    String appID;
-    String deviceID;
+    private String appID;
+    private String deviceID;
 
-    String time;
-    double frequency;
-    String modulation;
-    String dataRate;
-    String codingRate;
+    private String time;
+    private double frequency;
+    private String modulation;
+    private String dataRate;
+    private String codingRate;
 
-    ArrayList<Gateway> gateways = new ArrayList<>();
-    double maxRssi = 0;
-    double maxSnr = 100;
-    double maxDistance = 0;
+    private ArrayList<Gateway> gateways = new ArrayList<>();
+    private double maxRssi = 0;
+    private double maxSnr = 100;
+    private double maxDistance = 0;
 
-    double latitude;
-    double longitude;
-    double altitude;
-    double accuracy;
-    String provider;
-    String mqttTopic;
-
+    private double latitude;
+    private double longitude;
+    private double altitude;
+    private double accuracy;
+    private String provider;
+    private String mqttTopic;
+    private String formattedTime;
 
     public String getModulation() {
         return modulation;
@@ -88,7 +97,7 @@ public class Packet {
     public double getMaxDistance() {
         if (maxDistance == 0) {
             for (Gateway gateway : gateways) {
-                double distance = 0;
+                double distance;
                 if (gateway.getLatitude() == 0 || gateway.getLongitude() == 0 || latitude == 0 || longitude == 0) {
                     distance = 0;
                 } else {
@@ -139,6 +148,21 @@ public class Packet {
 
     public void setTime(String time) {
         this.time = time;
+
+        if (TextUtils.isEmpty(time)) {
+            this.formattedTime = DATE_TIME_FORMAT.format(new Date());
+            return;
+        }
+
+        try {
+            this.formattedTime = DATE_TIME_FORMAT.format(ISO8601DateParser.parse(time));
+        } catch (ParseException e) {
+            this.formattedTime = DATE_TIME_FORMAT.format(new Date());
+        }
+    }
+
+    public String getFormattedTime() {
+        return formattedTime;
     }
 
     public String getDeviceID() {

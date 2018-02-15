@@ -39,16 +39,13 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  * Created by jpmeijers on 30-1-17.
  */
 
 public class TTNMapperService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
-
     private static final int ONGOING_NOTIFICATION_ID = 1;
     private static String TAG = "LoggingService";
     final Handler handler = new Handler();
@@ -241,7 +238,7 @@ public class TTNMapperService extends Service implements GoogleApiClient.Connect
                         Log.d(TAG, message.isDuplicate() + "");
                         sendNotification("Packet received but not logged. Location is not accurate enough (>20m). Try going outside.\nCurrent accuracy: " +
                                 (Math.round(mApplication.getLatestAcc() * 100) / 100) + " metres\n" +
-                                (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH).format(new Date())));
+                                Packet.DATE_TIME_FORMAT.format(new Date()));
                     } else if (mApplication.getLatestLat() != 0 && mApplication.getLatestLon() != 0) {
                         Log.d(TAG, "Packet received, logging");
 
@@ -252,7 +249,7 @@ public class TTNMapperService extends Service implements GoogleApiClient.Connect
 
                         if (mApplication.lastPacket.getGateways().size() > 1) {
                             sendNotification("Latest packet:\n" +
-                                    (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH).format(new Date())) + "\n" +
+                                    mApplication.lastPacket.getFormattedTime() + "\n" +
                                     "Gateways: " + mApplication.lastPacket.getGateways().size() + "\n" +
                                     "RSSI: " + mApplication.lastPacket.getMaxRssi() + "dBm (max)\n" +
                                     "SNR: " + mApplication.lastPacket.getMaxSnr() + "dB (max)\n" +
@@ -260,7 +257,7 @@ public class TTNMapperService extends Service implements GoogleApiClient.Connect
                             );
                         } else if (mApplication.lastPacket.getGateways().size() == 1) {
                             sendNotification("Latest packet:\n" +
-                                    (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH).format(new Date())) + "\n" +
+                                    mApplication.lastPacket.getFormattedTime() + "\n" +
                                     "Received by: " + mApplication.lastPacket.getGateways().get(0).gatewayID + "\n" +
                                     "RSSI: " + mApplication.lastPacket.getMaxRssi() + "dBm\n" +
                                     "SNR: " + mApplication.lastPacket.getMaxSnr() + "dB\n" +
@@ -268,7 +265,7 @@ public class TTNMapperService extends Service implements GoogleApiClient.Connect
                             );
                         } else {
                             sendNotification("Latest packet:\n" +
-                                    (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH).format(new Date())) + "\n" +
+                                    mApplication.lastPacket.getFormattedTime() + "\n" +
                                     "Received by unknown gateway!\n" +
                                     "RSSI: " + mApplication.lastPacket.getMaxRssi() + "dBm\n" +
                                     "SNR: " + mApplication.lastPacket.getMaxSnr() + "dB\n" +
@@ -277,7 +274,8 @@ public class TTNMapperService extends Service implements GoogleApiClient.Connect
                         }
                     } else {
                         Log.d(TAG, "Packet received, GPS location unknown");
-                        sendNotification("Packet received, but location of phone is still unknown.\n" + (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH).format(new Date())));
+                        sendNotification("Packet received, but location of phone is still unknown.\n" +
+                                Packet.DATE_TIME_FORMAT.format(new Date()));
                     }
 
                     playSound();
