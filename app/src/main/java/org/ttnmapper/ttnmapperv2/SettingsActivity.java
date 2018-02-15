@@ -30,13 +30,13 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         MyApplication mApplication = (MyApplication) getApplicationContext();
-        RadioButton rbUpload = (RadioButton) findViewById(R.id.radioButtonUploadGlobal);
-        RadioButton rbExperiment = (RadioButton) findViewById(R.id.radioButtonUploadExperiment);
-        RadioButton rbNoUpload = (RadioButton) findViewById(R.id.radioButtonNoUpload);
-        EditText etExperimentName = (EditText) findViewById(R.id.editTextExperimentName);
-        EditText etSaveToFile = (EditText) findViewById(R.id.editTextFilename);
-        CheckBox cbSaveToFile = (CheckBox) findViewById(R.id.checkBoxSaveFile);
-        TextView versionText = (TextView) findViewById(R.id.textViewVersion);
+        RadioButton rbUpload = findViewById(R.id.radioButtonUploadGlobal);
+        RadioButton rbExperiment = findViewById(R.id.radioButtonUploadExperiment);
+        RadioButton rbNoUpload = findViewById(R.id.radioButtonNoUpload);
+        EditText etExperimentName = findViewById(R.id.editTextExperimentName);
+        EditText etSaveToFile = findViewById(R.id.editTextFilename);
+        CheckBox cbSaveToFile = findViewById(R.id.checkBoxSaveFile);
+        TextView versionText = findViewById(R.id.textViewVersion);
 
         // version
         try {
@@ -44,7 +44,7 @@ public class SettingsActivity extends AppCompatActivity {
             final PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             final String version = pInfo.versionName;
             int verCode = pInfo.versionCode;
-            versionText.setText("App version number: " + verCode + "\nBuild date: " + version);
+            versionText.setText(String.format("App version number: %d\nBuild date: %s", verCode, version));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -71,43 +71,38 @@ public class SettingsActivity extends AppCompatActivity {
 
 
         // and listen for changes
-        RadioGroup rg = (RadioGroup) findViewById(R.id.radioGroupUpload);
-        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                Log.d(TAG, "Radio group changed");
+        RadioGroup rg = findViewById(R.id.radioGroupUpload);
+        rg.setOnCheckedChangeListener((group, checkedId) -> {
+            Log.d(TAG, "Radio group changed");
 
-                if (checkedId == R.id.radioButtonUploadExperiment) {
-                    Log.d(TAG, "experiment checked");
-                    EditText etExperimentName = (EditText) findViewById(R.id.editTextExperimentName);
-                    etExperimentName.setEnabled(true);
+            if (checkedId == R.id.radioButtonUploadExperiment) {
+                Log.d(TAG, "experiment checked");
+                etExperimentName.setEnabled(true);
 
-                } else {
-                    Log.d(TAG, "not experiment");
-                    EditText etExperimentName = (EditText) findViewById(R.id.editTextExperimentName);
-                    etExperimentName.setEnabled(false);
-                }
-
+            } else {
+                Log.d(TAG, "not experiment");
+                etExperimentName.setEnabled(false);
             }
+
         });
 
         // set text view to say if a device was linked yet or not
-        TextView textView = (TextView) findViewById(R.id.textViewLinekdDevice);
+        TextView textView = findViewById(R.id.textViewLinekdDevice);
         if (mApplication.isConfigured()) {
-            textView.setText("Already configured.\nUsing device with ID " + mApplication.getTtnDeviceId());
+            textView.setText(String.format("Already configured.\nUsing device with ID %s", mApplication.getTtnDeviceId()));
         } else {
             textView.setText("No device linked yet");
         }
 
         //sound
         SharedPreferences myPrefs = this.getSharedPreferences(SettingConstants.PREFERENCES, MODE_PRIVATE);
-        CheckBox soundCb = (CheckBox) findViewById(R.id.checkBoxNotificationSound);
+        CheckBox soundCb = findViewById(R.id.checkBoxNotificationSound);
         soundCb.setChecked(myPrefs.getBoolean(SettingConstants.SOUNDON, SettingConstants.SOUNDON_DEFAULT));
-        TextView soundTV = (TextView) findViewById(R.id.textViewCurrentSound);
+        TextView soundTV = findViewById(R.id.textViewCurrentSound);
         soundTV.setText(myPrefs.getString(SettingConstants.SOUNDFILE, SettingConstants.SOUNDFILE_DEFAULT));
 
         //zoom
-        CheckBox zoomCb = (CheckBox) findViewById(R.id.checkBoxZoom);
+        CheckBox zoomCb = findViewById(R.id.checkBoxZoom);
         zoomCb.setChecked(myPrefs.getBoolean(SettingConstants.ZOOMBUTTONS, SettingConstants.ZOOMBUTTONS_DEFAULT));
 
     }
@@ -125,9 +120,9 @@ public class SettingsActivity extends AppCompatActivity {
         Log.d(TAG, "Save clicked");
 
         MyApplication mApplication = (MyApplication) getApplicationContext();
-        RadioButton rbUpload = (RadioButton) findViewById(R.id.radioButtonUploadGlobal);
-        RadioButton rbExperiment = (RadioButton) findViewById(R.id.radioButtonUploadExperiment);
-        EditText etExperimentName = (EditText) findViewById(R.id.editTextExperimentName);
+        RadioButton rbUpload = findViewById(R.id.radioButtonUploadGlobal);
+        RadioButton rbExperiment = findViewById(R.id.radioButtonUploadExperiment);
+        EditText etExperimentName = findViewById(R.id.editTextExperimentName);
 
         //first enable upload, then test experiment
         if (rbUpload.isChecked()) {
@@ -150,7 +145,7 @@ public class SettingsActivity extends AppCompatActivity {
                 .putCustomAttribute("upload", rbUpload.isChecked() + ""));
 
         //save to file
-        CheckBox cbSaveToFile = (CheckBox) findViewById(R.id.checkBoxSaveFile);
+        CheckBox cbSaveToFile = findViewById(R.id.checkBoxSaveFile);
         mApplication.setSaveToFile(cbSaveToFile.isChecked());
 
         Answers.getInstance().logCustom(new CustomEvent("Save To File")
@@ -160,14 +155,14 @@ public class SettingsActivity extends AppCompatActivity {
         SharedPreferences myPrefs = this.getSharedPreferences(SettingConstants.PREFERENCES, MODE_PRIVATE);
         SharedPreferences.Editor prefsEditor = myPrefs.edit();
 
-        CheckBox soundCb = (CheckBox) findViewById(R.id.checkBoxNotificationSound);
+        CheckBox soundCb = findViewById(R.id.checkBoxNotificationSound);
         prefsEditor.putBoolean(SettingConstants.SOUNDON, soundCb.isChecked());
 
         Answers.getInstance().logCustom(new CustomEvent("Sound On")
                 .putCustomAttribute("on", soundCb.isChecked() + ""));
 
         //zoom
-        CheckBox zoomCb = (CheckBox) findViewById(R.id.checkBoxZoom);
+        CheckBox zoomCb = findViewById(R.id.checkBoxZoom);
         prefsEditor.putBoolean(SettingConstants.ZOOMBUTTONS, zoomCb.isChecked());
 
         Answers.getInstance().logCustom(new CustomEvent("Zoom buttons")
@@ -204,7 +199,7 @@ public class SettingsActivity extends AppCompatActivity {
                 prefsEditor.putString(SettingConstants.SOUNDFILE, "");
                 prefsEditor.apply();
             }
-            TextView soundTV = (TextView) findViewById(R.id.textViewCurrentSound);
+            TextView soundTV = findViewById(R.id.textViewCurrentSound);
             soundTV.setText(myPrefs.getString(SettingConstants.SOUNDFILE, SettingConstants.SOUNDFILE_DEFAULT));
         }
     }

@@ -6,7 +6,6 @@ import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -36,6 +35,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdate;
@@ -77,7 +77,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     ArrayList<String> gatewaysWithMarkers = new ArrayList<>();
     ArrayList<MarkerOptions> markersOnMap = new ArrayList<>();
     private GoogleMap mMap;
-    private boolean startUpComplete = false;
+
     /**
      * Defines callbacks for service binding, passed to bindService()
      */
@@ -93,7 +93,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mBound = true;
 
             //disable toggle button until service is bound
-            SwitchCompat toggleButton = (SwitchCompat) findViewById(R.id.switchStartLogging);
+            SwitchCompat toggleButton = findViewById(R.id.switchStartLogging);
             toggleButton.setEnabled(true);
         }
 
@@ -103,7 +103,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mBound = false;
 
             //disable toggle button until service is bound
-            SwitchCompat toggleButton = (SwitchCompat) findViewById(R.id.switchStartLogging);
+            SwitchCompat toggleButton = findViewById(R.id.switchStartLogging);
             toggleButton.setEnabled(true);
         }
     };
@@ -164,7 +164,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         //logging button
-        SwitchCompat toggleButton = (SwitchCompat) findViewById(R.id.switchStartLogging);
+        SwitchCompat toggleButton = findViewById(R.id.switchStartLogging);
 
         //second the listener
         toggleButton.setOnCheckedChangeListener(this);
@@ -193,27 +193,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             builder1.setPositiveButton(
                     "Install",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                            try {
-                                Intent intent = new Intent(Intent.ACTION_VIEW);
-                                intent.setData(Uri.parse("market://details?id=com.google.android.gms"));
-                                startActivity(intent);
-                                finish();
-                            } catch (ActivityNotFoundException e) {
-                                //play store not installed
-                            }
+                    (dialog, id) -> {
+                        dialog.cancel();
+                        try {
+                            Intent intent1 = new Intent(Intent.ACTION_VIEW);
+                            intent1.setData(Uri.parse("market://details?id=com.google.android.gms"));
+                            startActivity(intent1);
+                            finish();
+                        } catch (ActivityNotFoundException e) {
+                            //play store not installed
                         }
                     });
 
             builder1.setNegativeButton(
                     "Not now",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
+                    (dialog, id) -> dialog.cancel());
 
             AlertDialog alert11 = builder1.create();
             alert11.show();
@@ -231,28 +225,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             builder1.setPositiveButton(
                     "Yes",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                            // Discover handler mqtt address - http://discovery.thethingsnetwork.org:8080/announcements/handler/
-                            // Link the device
-                            MyApplication mApplication = (MyApplication) getApplicationContext();
-                            mApplication.setTtnApplicationId(data.getQueryParameter("appid"));
-                            mApplication.setTtnDeviceId(data.getQueryParameter("devid"));
-                            mApplication.setTtnAccessKey(data.getQueryParameter("accesskey"));
-                            mApplication.setTtnBrokerByHandler(data.getQueryParameter("handler"));
+                    (dialog, id) -> {
+                        dialog.cancel();
+                        // Discover handler mqtt address - http://discovery.thethingsnetwork.org:8080/announcements/handler/
+                        // Link the device
+                        MyApplication mApplication1 = (MyApplication) getApplicationContext();
+                        mApplication1.setTtnApplicationId(data.getQueryParameter("appid"));
+                        mApplication1.setTtnDeviceId(data.getQueryParameter("devid"));
+                        mApplication1.setTtnAccessKey(data.getQueryParameter("accesskey"));
+                        mApplication1.setTtnBrokerByHandler(data.getQueryParameter("handler"));
 
-                            Answers.getInstance().logCustom(new CustomEvent("Device configure").putCustomAttribute("method", "link"));
-                        }
+                        Answers.getInstance().logCustom(new CustomEvent("Device configure").putCustomAttribute("method", "link"));
                     });
 
             builder1.setNegativeButton(
                     "No",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
+                    (dialog, id) -> dialog.cancel());
 
             AlertDialog alert11 = builder1.create();
             alert11.show();
@@ -265,21 +253,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             builder1.setPositiveButton(
                     "Link device",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                            Intent intent = new Intent(getApplicationContext(), LinkDevice.class);
-                            startActivity(intent);
-                        }
+                    (dialog, id) -> {
+                        dialog.cancel();
+                        Intent intent12 = new Intent(getApplicationContext(), LinkDevice.class);
+                        startActivity(intent12);
                     });
 
             builder1.setNegativeButton(
                     "Not now",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
+                    (dialog, id) -> dialog.cancel());
 
             AlertDialog alert11 = builder1.create();
             alert11.show();
@@ -289,12 +271,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onResume() {
         super.onResume();
-        startUpComplete = false;
         Log.d(TAG, "onResume");
         MyApplication mApplication = (MyApplication) getApplicationContext();
 
         //logging button
-        SwitchCompat toggleButton = (SwitchCompat) findViewById(R.id.switchStartLogging);
+        SwitchCompat toggleButton = findViewById(R.id.switchStartLogging);
         if (isMyServiceRunning(TTNMapperService.class)) {
             toggleButton.setChecked(true);
             Intent startServiceIntent = new Intent(this, TTNMapperService.class);
@@ -318,8 +299,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("ttn-mapper-service-event"));
 
-        startUpComplete = true;
-
         if (mMap != null) {
             clearAndReaddAllToMap();
 
@@ -337,7 +316,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onPause() {
         Log.d(TAG, "onPause");
-        startUpComplete = false;
         // Unregister since the activity is not visible
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         // Unbind from the service
@@ -397,7 +375,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void setFABcolors() {
         SharedPreferences myPrefs = this.getSharedPreferences(SettingConstants.PREFERENCES, MODE_PRIVATE);
 
-        com.github.clans.fab.FloatingActionButton floatingActionButton = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabItemScreenOn);
+        FloatingActionButton floatingActionButton = findViewById(R.id.fabItemScreenOn);
         if (myPrefs.getBoolean(SettingConstants.KEEP_SCREEN_ON, SettingConstants.KEEP_SCREEN_ON_DEFAULT)) {
             floatingActionButton.setColorNormalResId(R.color.fab_green_dark);
             floatingActionButton.setColorPressedResId(R.color.fab_green_light);
@@ -413,7 +391,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
 
-        floatingActionButton = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabItemAutoCenter);
+        floatingActionButton = findViewById(R.id.fabItemAutoCenter);
         if (myPrefs.getBoolean(SettingConstants.AUTO_CENTER, SettingConstants.AUTO_CENTER_DEFAULT)) {
             floatingActionButton.setColorNormalResId(R.color.fab_green_dark);
             floatingActionButton.setColorPressedResId(R.color.fab_green_light);
@@ -425,7 +403,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
 
-        floatingActionButton = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabItemAutoZoom);
+        floatingActionButton = findViewById(R.id.fabItemAutoZoom);
         if (myPrefs.getBoolean(SettingConstants.AUTO_ZOOM, SettingConstants.AUTO_ZOOM_DEFAULT)) {
             floatingActionButton.setColorNormalResId(R.color.fab_green_dark);
             floatingActionButton.setColorPressedResId(R.color.fab_green_light);
@@ -437,7 +415,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
 
-        floatingActionButton = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabItemLordrive);
+        floatingActionButton = findViewById(R.id.fabItemLordrive);
         if (myPrefs.getBoolean(SettingConstants.LORDRIVE, SettingConstants.LORDRIVE_DEFAULT)) {
             floatingActionButton.setColorNormalResId(R.color.fab_green_dark);
             floatingActionButton.setColorPressedResId(R.color.fab_green_light);
@@ -449,7 +427,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
 
-        floatingActionButton = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabItemCoverage);
+        floatingActionButton = findViewById(R.id.fabItemCoverage);
         if (myPrefs.getBoolean(SettingConstants.COVERAGE, SettingConstants.COVERAGE_DEFAULT)) {
             floatingActionButton.setColorNormalResId(R.color.fab_green_dark);
             floatingActionButton.setColorPressedResId(R.color.fab_green_light);
@@ -465,7 +443,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void onToggleScreen(View v) {
-        com.github.clans.fab.FloatingActionButton floatingActionButton = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabItemScreenOn);
+        FloatingActionButton floatingActionButton = findViewById(R.id.fabItemScreenOn);
         SharedPreferences myPrefs = this.getSharedPreferences(SettingConstants.PREFERENCES, MODE_PRIVATE);
         boolean previousState = myPrefs.getBoolean(SettingConstants.KEEP_SCREEN_ON, SettingConstants.KEEP_SCREEN_ON_DEFAULT);
 
@@ -492,7 +470,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void onToggleAutoCenter(View v) {
-        com.github.clans.fab.FloatingActionButton floatingActionButton = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabItemAutoCenter);
+        FloatingActionButton floatingActionButton = findViewById(R.id.fabItemAutoCenter);
         SharedPreferences myPrefs = this.getSharedPreferences(SettingConstants.PREFERENCES, MODE_PRIVATE);
         boolean previousState = myPrefs.getBoolean(SettingConstants.AUTO_CENTER, SettingConstants.AUTO_CENTER_DEFAULT);
 
@@ -517,7 +495,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void onToggleAutoZoom(View v) {
-        com.github.clans.fab.FloatingActionButton floatingActionButton = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabItemAutoZoom);
+        FloatingActionButton floatingActionButton = findViewById(R.id.fabItemAutoZoom);
         SharedPreferences myPrefs = this.getSharedPreferences(SettingConstants.PREFERENCES, MODE_PRIVATE);
         boolean previousState = myPrefs.getBoolean(SettingConstants.AUTO_ZOOM, SettingConstants.AUTO_ZOOM_DEFAULT);
 
@@ -542,7 +520,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void onToggleLordrive(View v) {
-        com.github.clans.fab.FloatingActionButton floatingActionButton = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabItemLordrive);
+        FloatingActionButton floatingActionButton = findViewById(R.id.fabItemLordrive);
         SharedPreferences myPrefs = this.getSharedPreferences(SettingConstants.PREFERENCES, MODE_PRIVATE);
         boolean previousState = myPrefs.getBoolean(SettingConstants.LORDRIVE, SettingConstants.LORDRIVE_DEFAULT);
 
@@ -571,7 +549,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
 
-        com.github.clans.fab.FloatingActionButton floatingActionButton = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fabItemCoverage);
+        FloatingActionButton floatingActionButton = findViewById(R.id.fabItemCoverage);
         SharedPreferences myPrefs = this.getSharedPreferences(SettingConstants.PREFERENCES, MODE_PRIVATE);
         boolean previousState = myPrefs.getBoolean(SettingConstants.COVERAGE, SettingConstants.COVERAGE_DEFAULT);
 
@@ -616,7 +594,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             setStatusMessage("Mapping restarted.");
         } else {
             setStatusMessage("You need to link a device before you can start mapping!");
-            SwitchCompat toggleButton = (SwitchCompat) findViewById(R.id.switchStartLogging);
+            SwitchCompat toggleButton = findViewById(R.id.switchStartLogging);
             toggleButton.setChecked(false);
         }
     }
@@ -626,9 +604,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mMap = googleMap;
         try {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                //do nothing
-            } else {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mMap.setMyLocationEnabled(true);
             }
 
@@ -689,7 +665,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //check for permissions
         MyApplication mApplication = (MyApplication) getApplicationContext();
         if (!mApplication.checkPermissions()) {
-            SwitchCompat toggleButton = (SwitchCompat) findViewById(R.id.switchStartLogging);
+            SwitchCompat toggleButton = findViewById(R.id.switchStartLogging);
             toggleButton.setChecked(false);
 
             AlertDialog.Builder builder1 = new AlertDialog.Builder(MapsActivity.this);
@@ -698,27 +674,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             builder1.setPositiveButton(
                     "Configure",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                            Intent intent = new Intent(getApplicationContext(), CheckPermissions.class);
-                            startActivity(intent);
-                        }
+                    (dialog, id) -> {
+                        dialog.cancel();
+                        Intent intent = new Intent(getApplicationContext(), CheckPermissions.class);
+                        startActivity(intent);
                     });
 
             builder1.setNegativeButton(
                     "Not now",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
+                    (dialog, id) -> dialog.cancel());
 
             AlertDialog alert11 = builder1.create();
             alert11.show();
         } else {
             //disable toggle button until service is bound
-            SwitchCompat toggleButton = (SwitchCompat) findViewById(R.id.switchStartLogging);
+            SwitchCompat toggleButton = findViewById(R.id.switchStartLogging);
             toggleButton.setEnabled(false);
 
             //begin service
@@ -778,12 +748,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
             //update counters after adding a packet
-            TextView tv = (TextView) findViewById(R.id.textViewCounters);
+            TextView tv = findViewById(R.id.textViewCounters);
             if (gatewaysWithMarkers.isEmpty()) {
-                tv.setText(mApplication.packets.size() + " packets");
+                tv.setText(String.format("%d packets", mApplication.packets.size()));
             } else {
-                tv.setText(mApplication.packets.size() + " packets\n" +
-                        gatewaysWithMarkers.size() + " gateways");
+                tv.setText(String.format("%d packets\n%d gateways", mApplication.packets.size(), gatewaysWithMarkers.size()));
             }
         }
 
@@ -818,10 +787,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //update counters after adding a packet
         TextView tv = (TextView) findViewById(R.id.textViewCounters);
         if (gatewaysWithMarkers.isEmpty()) {
-            tv.setText(mApplication.packets.size() + " packets");
+            tv.setText(String.format("%d packets", mApplication.packets.size()));
         } else {
-            tv.setText(mApplication.packets.size() + " packets\n" +
-                    gatewaysWithMarkers.size() + " gateways");
+            tv.setText(String.format("%d packets\n%d gateways", mApplication.packets.size(), gatewaysWithMarkers.size()));
         }
     }
 
@@ -893,9 +861,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (gwLat != 0 && gwLon != 0) {
                 String gatewayId = gateway.getGatewayID();
 
-                if (gatewaysWithMarkers.contains(gatewayId)) {
-                    //already has a marker for this gateway
-                } else {
+                if (!gatewaysWithMarkers.contains(gatewayId)) {
                     MarkerOptions gwoptions = new MarkerOptions();
                     gwoptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.gateway_dot));
                     gwoptions.position(new LatLng(gwLat, gwLon));
@@ -906,6 +872,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     gatewaysWithMarkers.add(gatewayId);
                 }
+                //already has a marker for this gateway
             }
         }
     }
@@ -914,7 +881,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         MyApplication mApplication = (MyApplication) getApplicationContext();
         mApplication.lastStatusMessage = message;
 
-        TextView tv = (TextView) findViewById(R.id.textViewStatus);
+        TextView tv = findViewById(R.id.textViewStatus);
         tv.setText(message);
     }
 

@@ -2,13 +2,12 @@ package org.ttnmapper.ttnmapperv2;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
-import java.util.ArrayList;
 
 /**
  * Created by jpmeijers on 30-1-17.
@@ -16,9 +15,9 @@ import java.util.ArrayList;
 
 public class DeviceListAdapter extends ArrayAdapter<String> {
 
-    Context mContext;
-    int layoutResourceId;
-    String[] data = null;
+    private Context mContext;
+    private int layoutResourceId;
+    private String[] data = null;
 
     public DeviceListAdapter(Context mContext, int layoutResourceId, String[] data) {
         super(mContext, layoutResourceId, data);
@@ -29,8 +28,9 @@ public class DeviceListAdapter extends ArrayAdapter<String> {
 
 
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 
         /*
          * The convertView argument is essentially a "ScrapView" as described is Lucas post
@@ -44,7 +44,7 @@ public class DeviceListAdapter extends ArrayAdapter<String> {
             convertView = inflater.inflate(R.layout.list_devices_item, parent, false);
         }
 
-        TextView deviceId = (TextView)convertView.findViewById(R.id.deviceID);
+        TextView deviceId = convertView.findViewById(R.id.deviceID);
 
         deviceId.setText(data[position]);
 

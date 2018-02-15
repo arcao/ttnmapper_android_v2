@@ -16,7 +16,7 @@ public class ApplicationList extends AppCompatActivity implements AdapterView.On
 
         MyApplication mApplication = (MyApplication)getApplicationContext();
 
-        ListView listView = (ListView)findViewById(R.id.listViewApplications);
+        ListView listView = findViewById(R.id.listViewApplications);
         final ApplicationListAdapter adapter = new ApplicationListAdapter(this, 0, mApplication.ttnApplications);
         listView.setAdapter(adapter);
 

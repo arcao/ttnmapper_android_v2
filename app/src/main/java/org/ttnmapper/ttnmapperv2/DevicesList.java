@@ -27,7 +27,7 @@ public class DevicesList extends AppCompatActivity implements AdapterView.OnItem
         }
         devicesCopy[devicesCopy.length-1] = "All devices";
 
-        ListView listView = (ListView)findViewById(R.id.listViewDevices);
+        ListView listView = findViewById(R.id.listViewDevices);
         final DeviceListAdapter adapter = new DeviceListAdapter(this, 0, devicesCopy);
         listView.setAdapter(adapter);
 

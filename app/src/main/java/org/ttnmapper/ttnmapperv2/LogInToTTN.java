@@ -1,5 +1,6 @@
 package org.ttnmapper.ttnmapperv2;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -43,8 +44,6 @@ public class LogInToTTN extends AppCompatActivity {
     final String TAG = "LogInToTTN";
     final String secretState = "secret" + new Random().nextInt(999_999);
 
-    private String clientId;
-    private String clientSecret;
     private String redirectURI;
 
     private OAuth2AccessToken accessToken;
@@ -72,8 +71,8 @@ public class LogInToTTN extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in_to_ttn);
 
-        clientId = getString(R.string.oauth_client_id);
-        clientSecret = getString(R.string.oauth_client_secret);
+        String clientId = getString(R.string.oauth_client_id);
+        String clientSecret = getString(R.string.oauth_client_secret);
         redirectURI = getString(R.string.oauth_redirect_url);
 
         service = new ServiceBuilder(clientId)
@@ -93,41 +92,36 @@ public class LogInToTTN extends AppCompatActivity {
 
     public void setStatusMessage(final String status)
     {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                WebView webview = (WebView) findViewById(R.id.webViewTTNlogin);
-                webview.setVisibility(View.GONE);
+        runOnUiThread(() -> {
+            WebView webview = findViewById(R.id.webViewTTNlogin);
+            webview.setVisibility(View.GONE);
 
-                TextView textView = (TextView) findViewById(R.id.textViewStatus);
-                textView.setVisibility(View.VISIBLE);
-                textView.setText(status);
-                Log.d(TAG, status);
-            }
+            TextView textView = findViewById(R.id.textViewStatus);
+            textView.setVisibility(View.VISIBLE);
+            textView.setText(status);
+            Log.d(TAG, status);
         });
     }
 
     public void enableRetryButton() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Button button = (Button) findViewById(R.id.buttonRetry);
-                button.setVisibility(View.VISIBLE);
+        runOnUiThread(() -> {
+            Button button = findViewById(R.id.buttonRetry);
+            button.setVisibility(View.VISIBLE);
 
-                ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBarLogIn);
-                progressBar.setVisibility(View.GONE);
+            ProgressBar progressBar = findViewById(R.id.progressBarLogIn);
+            progressBar.setVisibility(View.GONE);
 
-            }
         });
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     public void loadLoginPage()
     {
         final String authorizationUrl = service.getAuthorizationUrl();
 
         clearCookies(this);
 
-        WebView webview = (WebView) findViewById(R.id.webViewTTNlogin);
+        WebView webview = findViewById(R.id.webViewTTNlogin);
         webview.getSettings().setJavaScriptEnabled(true);
         webview.setWebViewClient(new WebViewClient() {
             public boolean shouldOverrideUrlLoading(WebView view, String url){
@@ -166,14 +160,14 @@ public class LogInToTTN extends AppCompatActivity {
     {
         //hide web view, show progress norification
         Log.d(TAG, "Redirected: "+url);
-        WebView webview = (WebView) findViewById(R.id.webViewTTNlogin);
+        WebView webview = findViewById(R.id.webViewTTNlogin);
         webview.setVisibility(View.GONE);
 
-        TextView textView = (TextView) findViewById(R.id.textViewStatus);
+        TextView textView = findViewById(R.id.textViewStatus);
         textView.setVisibility(View.VISIBLE);
         textView.setText("Redirected back from TTN login page");
 
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBarLogIn);
+        ProgressBar progressBar = findViewById(R.id.progressBarLogIn);
         progressBar.setVisibility(View.VISIBLE);
 
         Map<String, String> callbackData = getQueryParameter(Uri.parse(url));
@@ -216,16 +210,16 @@ public class LogInToTTN extends AppCompatActivity {
 
     public void onButtonRetryClicked(View v)
     {
-        WebView webview = (WebView) findViewById(R.id.webViewTTNlogin);
+        WebView webview = findViewById(R.id.webViewTTNlogin);
         webview.setVisibility(View.VISIBLE);
 
-        TextView textView = (TextView) findViewById(R.id.textViewStatus);
+        TextView textView = findViewById(R.id.textViewStatus);
         textView.setVisibility(View.GONE);
 
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBarLogIn);
+        ProgressBar progressBar = findViewById(R.id.progressBarLogIn);
         progressBar.setVisibility(View.GONE);
 
-        Button button = (Button) findViewById(R.id.buttonRetry);
+        Button button = findViewById(R.id.buttonRetry);
         button.setVisibility(View.GONE);
 
         loadLoginPage();
@@ -312,14 +306,11 @@ public class LogInToTTN extends AppCompatActivity {
                 if (response.getCode() == 401) {
                     setStatusMessage("Not authorized. Try again.");
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBarLogIn);
-                            Button button = (Button) findViewById(R.id.buttonRetry);
-                            progressBar.setVisibility(View.GONE);
-                            button.setVisibility(View.VISIBLE);
-                        }
+                    runOnUiThread(() -> {
+                        ProgressBar progressBar = findViewById(R.id.progressBarLogIn);
+                        Button button = findViewById(R.id.buttonRetry);
+                        progressBar.setVisibility(View.GONE);
+                        button.setVisibility(View.VISIBLE);
                     });
                 } else {
                     setStatusMessage("Getting list of applications");

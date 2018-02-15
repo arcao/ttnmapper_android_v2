@@ -18,10 +18,10 @@ public class LinkDevice extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        TextView textViewApplicationID = (TextView) findViewById(R.id.textViewApplicationID);
-        TextView textViewDeviceID = (TextView) findViewById(R.id.textViewDeviceID);
-        TextView textViewAccessKey = (TextView) findViewById(R.id.textViewAccessKey);
-        TextView textViewBroker = (TextView) findViewById(R.id.textViewBroker);
+        TextView textViewApplicationID = findViewById(R.id.textViewApplicationID);
+        TextView textViewDeviceID = findViewById(R.id.textViewDeviceID);
+        TextView textViewAccessKey = findViewById(R.id.textViewAccessKey);
+        TextView textViewBroker = findViewById(R.id.textViewBroker);
 
         MyApplication mApplication = (MyApplication)getApplicationContext();
 

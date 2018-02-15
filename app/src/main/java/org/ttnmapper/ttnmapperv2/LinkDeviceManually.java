@@ -19,10 +19,10 @@ public class LinkDeviceManually extends AppCompatActivity {
 
         MyApplication mApplication = (MyApplication)getApplicationContext();
 
-        EditText applicationID = (EditText) findViewById(R.id.editTextApplicationID);
-        EditText deviceID = (EditText) findViewById(R.id.editTextDeviceID);
-        EditText accessKey = (EditText) findViewById(R.id.editTextAccessKey);
-        EditText broker = (EditText) findViewById(R.id.editTextBroker);
+        EditText applicationID = findViewById(R.id.editTextApplicationID);
+        EditText deviceID = findViewById(R.id.editTextDeviceID);
+        EditText accessKey = findViewById(R.id.editTextAccessKey);
+        EditText broker = findViewById(R.id.editTextBroker);
 
         applicationID.setText(mApplication.getTtnApplicationId());
         deviceID.setText(mApplication.getTtnDeviceId());
@@ -35,10 +35,10 @@ public class LinkDeviceManually extends AppCompatActivity {
         //set values in myApplication
         MyApplication mApplication = (MyApplication)getApplicationContext();
 
-        EditText applicationID = (EditText) findViewById(R.id.editTextApplicationID);
-        EditText deviceID = (EditText) findViewById(R.id.editTextDeviceID);
-        EditText accessKey = (EditText) findViewById(R.id.editTextAccessKey);
-        EditText broker = (EditText) findViewById(R.id.editTextBroker);
+        EditText applicationID = findViewById(R.id.editTextApplicationID);
+        EditText deviceID = findViewById(R.id.editTextDeviceID);
+        EditText accessKey = findViewById(R.id.editTextAccessKey);
+        EditText broker = findViewById(R.id.editTextBroker);
 
         String applicationIDtext = applicationID.getText().toString();
         if (applicationIDtext.contains("+")) {

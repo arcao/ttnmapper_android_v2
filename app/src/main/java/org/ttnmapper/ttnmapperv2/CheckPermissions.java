@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -32,7 +33,7 @@ public class CheckPermissions extends AppCompatActivity implements ActivityCompa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_permissions);
 
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+        coordinatorLayout = findViewById(R.id.coordinatorLayout);
 
         if (checkAndSetPermissions()) {
             onContinueClicked(null);
@@ -46,44 +47,44 @@ public class CheckPermissions extends AppCompatActivity implements ActivityCompa
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             allPermissionsGranted = false;
-            TextView textView = (TextView) findViewById(R.id.textViewPermissionCoarse);
+            TextView textView = findViewById(R.id.textViewPermissionCoarse);
             textView.setText("No");
-            Button button = (Button) findViewById(R.id.buttonPermissionCoarse);
+            Button button = findViewById(R.id.buttonPermissionCoarse);
             button.setEnabled(true);
         } else {
-            TextView textView = (TextView) findViewById(R.id.textViewPermissionCoarse);
+            TextView textView = findViewById(R.id.textViewPermissionCoarse);
             textView.setText("Yes");
-            Button button = (Button) findViewById(R.id.buttonPermissionCoarse);
+            Button button = findViewById(R.id.buttonPermissionCoarse);
             button.setEnabled(false);
         }
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             allPermissionsGranted = false;
-            TextView textView = (TextView) findViewById(R.id.textViewPermissionFine);
+            TextView textView = findViewById(R.id.textViewPermissionFine);
             textView.setText("No");
-            Button button = (Button) findViewById(R.id.buttonPermissionFine);
+            Button button = findViewById(R.id.buttonPermissionFine);
             button.setEnabled(true);
         } else {
-            TextView textView = (TextView) findViewById(R.id.textViewPermissionFine);
+            TextView textView = findViewById(R.id.textViewPermissionFine);
             textView.setText("Yes");
-            Button button = (Button) findViewById(R.id.buttonPermissionFine);
+            Button button = findViewById(R.id.buttonPermissionFine);
             button.setEnabled(false);
         }
 
         if (myPrefs.getBoolean(SettingConstants.SAVE_TO_FILE, true) && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             allPermissionsGranted = false;
-            TextView textView = (TextView) findViewById(R.id.textViewPermissionFile);
+            TextView textView = findViewById(R.id.textViewPermissionFile);
             textView.setText("No");
-            Button button = (Button) findViewById(R.id.buttonPermissionFile);
+            Button button = findViewById(R.id.buttonPermissionFile);
             button.setEnabled(true);
         } else {
-            TextView textView = (TextView) findViewById(R.id.textViewPermissionFile);
+            TextView textView = findViewById(R.id.textViewPermissionFile);
             textView.setText("Yes");
-            Button button = (Button) findViewById(R.id.buttonPermissionFile);
+            Button button = findViewById(R.id.buttonPermissionFile);
             button.setEnabled(false);
         }
 
-        Button button = (Button) findViewById(R.id.buttonPermissionsContinue);
+        Button button = findViewById(R.id.buttonPermissionsContinue);
         button.setEnabled(allPermissionsGranted);
 
         return allPermissionsGranted;
@@ -96,14 +97,9 @@ public class CheckPermissions extends AppCompatActivity implements ActivityCompa
             Log.i(TAG, "Displaying file permission rationale to provide additional context.");
             Snackbar.make(coordinatorLayout, R.string.permission_file_rationale,
                     Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.ok, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ActivityCompat.requestPermissions(CheckPermissions.this,
-                                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                    REQUEST_FILE_PERMISSION);
-                        }
-                    })
+                    .setAction(R.string.ok, v -> ActivityCompat.requestPermissions(CheckPermissions.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            REQUEST_FILE_PERMISSION))
                     .show();
         } else {
             ActivityCompat.requestPermissions(this,
@@ -118,14 +114,9 @@ public class CheckPermissions extends AppCompatActivity implements ActivityCompa
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
             Snackbar.make(coordinatorLayout, R.string.permission_location_rationale,
                     Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.ok, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ActivityCompat.requestPermissions(CheckPermissions.this,
-                                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                                    REQUEST_COARSE_PERMISSION);
-                        }
-                    })
+                    .setAction(R.string.ok, v -> ActivityCompat.requestPermissions(CheckPermissions.this,
+                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                            REQUEST_COARSE_PERMISSION))
                     .show();
         } else {
             ActivityCompat.requestPermissions(this,
@@ -139,14 +130,9 @@ public class CheckPermissions extends AppCompatActivity implements ActivityCompa
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             Snackbar.make(coordinatorLayout, R.string.permission_location_rationale,
                     Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.ok, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ActivityCompat.requestPermissions(CheckPermissions.this,
-                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                    REQUEST_FINE_PERMISSION);
-                        }
-                    })
+                    .setAction(R.string.ok, v -> ActivityCompat.requestPermissions(CheckPermissions.this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            REQUEST_FINE_PERMISSION))
                     .show();
         } else {
             ActivityCompat.requestPermissions(this,
@@ -159,7 +145,7 @@ public class CheckPermissions extends AppCompatActivity implements ActivityCompa
      * Callback received when a permissions request has been completed.
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         checkAndSetPermissions();
     }
 

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
@@ -164,14 +165,14 @@ public class MyApplication extends Application {
         Log.d(TAG, "Enqueuing request");
             httpClient.newCall(request).enqueue(new Callback() {
                 @Override
-                public void onFailure(Call call, IOException e) {
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     e.printStackTrace();
                 }
 
                 @Override
-                public void onResponse(Call call, final Response response) throws IOException {
+                public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        throw new IOException("Unexpected code " + response);
+                        throw new IOException(String.format("Unexpected code %s", response));
                     } else {
                         String responseData = response.body().string();
                         Log.d(TAG, "Valid response for handler from discovery server");
@@ -497,14 +498,14 @@ public class MyApplication extends Application {
             try {
                 postToServer(getString(R.string.ttnmapper_api_upload_packet), toPost.toString(), new Callback() {
                     @Override
-                    public void onFailure(Call call, IOException e) {
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
                         Log.d(TAG, "Error uploading");
                         e.printStackTrace();
                         Answers.getInstance().logCustom(new CustomEvent("Upload").putCustomAttribute("error", e.toString()));
                     }
 
                     @Override
-                    public void onResponse(Call call, Response response) throws IOException {
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                         if (response.isSuccessful()) {
                             final String returnedString = response.body().string();
                             System.out.println("HTTP response: " + returnedString);

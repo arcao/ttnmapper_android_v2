@@ -58,7 +58,6 @@ public class TTNMapperService extends Service implements GoogleApiClient.Connect
     private MqttClient mqttClient;
     private MqttClientPersistence persistence = new MemoryPersistence();
     private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
     private int reconnectCounter = 0;
     private boolean reconnectPending = false;
     private boolean shouldExit = false;
@@ -217,14 +216,11 @@ public class TTNMapperService extends Service implements GoogleApiClient.Connect
                         if (!reconnectPending && !shouldExit) {
                             reconnectCounter++;
                             sendNotification("MQTT reconnect retry " + reconnectCounter + "/10");
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Do something after 100ms
-                                    Log.d(TAG, "Should restart MQTT now");
-                                    reconnectPending = false;
-                                    new mqttConnectThread().execute();
-                                }
+                            handler.postDelayed(() -> {
+                                //Do something after 100ms
+                                Log.d(TAG, "Should restart MQTT now");
+                                reconnectPending = false;
+                                new mqttConnectThread().execute();
                             }, 10000);
                             reconnectPending = true;
                         }
@@ -307,14 +303,11 @@ public class TTNMapperService extends Service implements GoogleApiClient.Connect
                 if (!reconnectPending && !shouldExit) {
                     reconnectCounter++;
                     sendNotification("MQTT reconnect retry " + reconnectCounter + "/10");
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            //Do something after 100ms
-                            Log.d(TAG, "Should restart MQTT now");
-                            reconnectPending = false;
-                            new mqttConnectThread().execute();
-                        }
+                    handler.postDelayed(() -> {
+                        //Do something after 100ms
+                        Log.d(TAG, "Should restart MQTT now");
+                        reconnectPending = false;
+                        new mqttConnectThread().execute();
                     }, 10000);
                     reconnectPending = true;
                 }
@@ -391,7 +384,7 @@ public class TTNMapperService extends Service implements GoogleApiClient.Connect
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, "Google API client connected");
 //        String locationProvider = LocationManager.GPS_PROVIDER;
-        mLocationRequest = new LocationRequest();
+        LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(5000);
         mLocationRequest.setFastestInterval(500);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
