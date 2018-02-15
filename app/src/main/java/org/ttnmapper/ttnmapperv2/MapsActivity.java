@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -722,7 +723,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             //begin service
             Intent startServiceIntent = new Intent(this, TTNMapperService.class);
-            startService(startServiceIntent);
+            ContextCompat.startForegroundService(this, startServiceIntent);
             bindService(startServiceIntent, mConnection, Context.BIND_AUTO_CREATE);
         }
     }

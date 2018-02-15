@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
 public class LogInToTTN extends AppCompatActivity {
 
@@ -75,8 +76,7 @@ public class LogInToTTN extends AppCompatActivity {
         clientSecret = getString(R.string.oauth_client_secret);
         redirectURI = getString(R.string.oauth_redirect_url);
 
-        service = new ServiceBuilder()
-                .apiKey(clientId)
+        service = new ServiceBuilder(clientId)
                 .apiSecret(clientSecret)
                 .state(secretState)
                 .callback(redirectURI)
@@ -278,7 +278,7 @@ public class LogInToTTN extends AppCompatActivity {
         protected OAuth2AccessToken doInBackground(String... code) {
             try {
                 return service.getAccessToken(code[0]);
-            } catch (IOException e) {
+            } catch (InterruptedException | ExecutionException | IOException e) {
                 e.printStackTrace();
                 setStatusMessage("Failed to exchange code for a token.");
                 enableRetryButton();
@@ -300,13 +300,13 @@ public class LogInToTTN extends AppCompatActivity {
     private class getApplications extends AsyncTask<String, String, Boolean> {
 
         protected Boolean doInBackground(String... strings) {
-            OAuthRequest request = new OAuthRequest(Verb.GET, "https://account.thethingsnetwork.org/applications", service);
+            OAuthRequest request = new OAuthRequest(Verb.GET, "https://account.thethingsnetwork.org/applications");
 
             service.signRequest(accessToken, request);
             request.addHeader("Accept", "application/json");
 
             try {
-                final Response response = request.send();
+                final Response response = service.execute(request);
                 setStatusMessage("Application GET response code=" + response.getCode());
 
                 if (response.getCode() == 401) {
@@ -399,13 +399,13 @@ public class LogInToTTN extends AppCompatActivity {
             setStatusMessage("Discovering handlers");
 
             MyApplication mApplication = (MyApplication)getApplicationContext();
-            OAuthRequest request = new OAuthRequest(Verb.GET, "http://discovery.thethingsnetwork.org:8080/announcements/handler", service);
+            OAuthRequest request = new OAuthRequest(Verb.GET, "http://discovery.thethingsnetwork.org:8080/announcements/handler");
 
             service.signRequest(accessToken, request);
             request.addHeader("Accept", "application/json");
 
             try {
-                final Response response = request.send();
+                final Response response = service.execute(request);
 
                 JSONObject resultData = new JSONObject(response.getBody());
                 JSONArray handlers = resultData.getJSONArray("services");
@@ -502,18 +502,18 @@ public class LogInToTTN extends AppCompatActivity {
 
 
                 //get restricted token
-                OAuthRequest request = new OAuthRequest(Verb.POST, "https://account.thethingsnetwork.org/users/restrict-token", service);
+                OAuthRequest request = new OAuthRequest(Verb.POST, "https://account.thethingsnetwork.org/users/restrict-token");
                 service.signRequest(accessToken, request);
                 request.addHeader("Accept", "application/json");
                 request.addHeader("Content-Type", "application/json;charset=UTF-8");
-                request.addPayload("{\"scope\": [ \"apps:"+currentApp.getId()+"\" ]}");
+                request.setPayload("{\"scope\": [ \"apps:"+currentApp.getId()+"\" ]}");
                 //request.addBodyParameter("scope", "apps:"+currentApp.getId());
 
                 String restrictedToken = "";
                 Log.d(TAG, "sending request");
 
                 try {
-                    final Response response = request.send();
+                    final Response response = service.execute(request);
                     Log.d(TAG, "Restricted token received");
                     restrictedToken = new JSONObject(response.getBody()).getString("access_token");
 
@@ -525,14 +525,14 @@ public class LogInToTTN extends AppCompatActivity {
 
                 String URL = currentApp.getApiAddress()+"/applications/"+currentApp.getId()+"/devices";
                 Log.d(TAG, "Fetching "+URL);
-                request = new OAuthRequest(Verb.GET, URL, service);
+                request = new OAuthRequest(Verb.GET, URL);
 
                 //service.signRequest(accessToken, request);
                 request.addHeader("Accept", "application/json");
                 request.addHeader("Authorization", "Bearer "+restrictedToken);
 
                 try {
-                    final Response devicesResponse = request.send();
+                    final Response devicesResponse = service.execute(request);
 
                     /* {"devices":
                        [
