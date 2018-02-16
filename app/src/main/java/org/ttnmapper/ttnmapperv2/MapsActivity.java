@@ -860,14 +860,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             );
         } else if (packet.getGateways().size() == 1) {
             options.snippet("Received by: " + packet.getGateways().get(0).gatewayID + "\n" +
-                    "RSSI: " + packet.getMaxRssi() + "dBm (max)\n" +
-                    "SNR: " + packet.getMaxSnr() + "dB (max)\n" +
+                    "RSSI: " + packet.getMaxRssi() + "dBm\n" +
+                    "SNR: " + packet.getMaxSnr() + "dBm\n" +
                     "Distance: " + Math.round(packet.getMaxDistance() * 100) / 100 + "m"
             );
         } else {
             options.snippet("Received by unknown gateway!\n" +
-                    "RSSI: " + packet.getMaxRssi() + "dBm (max)\n" +
-                    "SNR: " + packet.getMaxSnr() + "dB (max)\n" +
+                    "RSSI: " + packet.getMaxRssi() + "dBm\n" +
+                    "SNR: " + packet.getMaxSnr() + "dB\n" +
                     "Distance: " + Math.round(packet.getMaxDistance() * 100) / 100 + "m"
             );
         }
