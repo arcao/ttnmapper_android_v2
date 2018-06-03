@@ -856,19 +856,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             options.snippet("Gateways: " + packet.getGateways().size() + "\n" +
                     "RSSI: " + packet.getMaxRssi() + "dBm (max)\n" +
                     "SNR: " + packet.getMaxSnr() + "dB (max)\n" +
-                    "Distance: " + Math.round(packet.getMaxDistance() * 100) / 100 + "m (max)"
+                    "Distance: " + Math.round(packet.getMaxDistance() * 100) / 100 + "m (max)\n" +
+                    "Channel: " + packet.getFormattedUplinkChannel()
             );
         } else if (packet.getGateways().size() == 1) {
             options.snippet("Received by: " + packet.getGateways().get(0).gatewayID + "\n" +
                     "RSSI: " + packet.getMaxRssi() + "dBm\n" +
                     "SNR: " + packet.getMaxSnr() + "dBm\n" +
-                    "Distance: " + Math.round(packet.getMaxDistance() * 100) / 100 + "m"
+                    "Distance: " + Math.round(packet.getMaxDistance() * 100) / 100 + "m\n" +
+                    "Channel: " + packet.getFormattedUplinkChannel()
             );
         } else {
             options.snippet("Received by unknown gateway!\n" +
                     "RSSI: " + packet.getMaxRssi() + "dBm\n" +
                     "SNR: " + packet.getMaxSnr() + "dB\n" +
-                    "Distance: " + Math.round(packet.getMaxDistance() * 100) / 100 + "m"
+                    "Distance: " + Math.round(packet.getMaxDistance() * 100) / 100 + "m\n" +
+                    "Channel: " + packet.getFormattedUplinkChannel()
             );
         }
 

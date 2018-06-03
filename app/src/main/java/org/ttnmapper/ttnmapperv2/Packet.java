@@ -237,5 +237,16 @@ public class Packet {
         this.mqttTopic = mqttTopic;
     }
 
+    public String getFormattedUplinkChannel() {
+        int uplinkChannel = getUplinkChannel();
+        if (uplinkChannel > 0) {
+            return String.format(Locale.US, "%d (%.1f MHz)", uplinkChannel, getFrequency());
+        } else {
+            return String.format(Locale.US, "? (%.1f MHz)", getFrequency());
+        }
+    }
 
+    private int getUplinkChannel() {
+        return TTNFrequencies.getUplinkChannel(frequency);
+    }
 }

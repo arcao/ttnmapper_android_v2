@@ -253,7 +253,8 @@ public class TTNMapperService extends Service implements GoogleApiClient.Connect
                                     "Gateways: " + mApplication.lastPacket.getGateways().size() + "\n" +
                                     "RSSI: " + mApplication.lastPacket.getMaxRssi() + "dBm (max)\n" +
                                     "SNR: " + mApplication.lastPacket.getMaxSnr() + "dB (max)\n" +
-                                    "Distance: " + Math.round(mApplication.lastPacket.getMaxDistance() * 100) / 100 + "m (max)"
+                                    "Distance: " + Math.round(mApplication.lastPacket.getMaxDistance() * 100) / 100 + "m (max)\n" +
+                                    "Channel: " + mApplication.lastPacket.getFormattedUplinkChannel()
                             );
                         } else if (mApplication.lastPacket.getGateways().size() == 1) {
                             sendNotification("Latest packet:\n" +
@@ -261,7 +262,8 @@ public class TTNMapperService extends Service implements GoogleApiClient.Connect
                                     "Received by: " + mApplication.lastPacket.getGateways().get(0).gatewayID + "\n" +
                                     "RSSI: " + mApplication.lastPacket.getMaxRssi() + "dBm\n" +
                                     "SNR: " + mApplication.lastPacket.getMaxSnr() + "dB\n" +
-                                    "Distance: " + Math.round(mApplication.lastPacket.getMaxDistance() * 100) / 100 + "m"
+                                    "Distance: " + Math.round(mApplication.lastPacket.getMaxDistance() * 100) / 100 + "m\n" +
+                                    "Channel: " + mApplication.lastPacket.getFormattedUplinkChannel()
                             );
                         } else {
                             sendNotification("Latest packet:\n" +
@@ -269,7 +271,8 @@ public class TTNMapperService extends Service implements GoogleApiClient.Connect
                                     "Received by unknown gateway!\n" +
                                     "RSSI: " + mApplication.lastPacket.getMaxRssi() + "dBm\n" +
                                     "SNR: " + mApplication.lastPacket.getMaxSnr() + "dB\n" +
-                                    "Distance: " + Math.round(mApplication.lastPacket.getMaxDistance() * 100) / 100 + "m"
+                                    "Distance: " + Math.round(mApplication.lastPacket.getMaxDistance() * 100) / 100 + "m\n" +
+                                    "Channel: " + mApplication.lastPacket.getFormattedUplinkChannel()
                             );
                         }
                     } else {
