@@ -256,7 +256,7 @@ public class Packet {
         for (Gateway gateway : gateways) {
             if (sb.length() > 0) sb.append("\n\n");
 
-            float distance = 0;
+            float distance = -1;
 
             if (gateway.getLatitude() == 0 || gateway.getLongitude() == 0 || latitude == 0 || longitude == 0) {
                 Location locationA = new Location("");
@@ -270,13 +270,12 @@ public class Packet {
                 distance = locationA.distanceTo(locationB);
             }
 
+            sb.append(gateway.gatewayID);
+            sb.append("\nRSSI: ").append(gateway.rssi).append("dBm");
+            sb.append("\nSNR: ").append(gateway.snr).append("dBm");
 
-            sb.append(gateway.gatewayID).append("\n");
-            sb.append("RSSI: ").append(gateway.rssi).append("dBm\n");
-            sb.append("SNR: ").append(gateway.snr).append("dBm\n");
-
-            if (distance > 0)
-                sb.append("Distance: ").append(Math.round(distance * 100) / 100).append("m\n");
+            if (distance >= 0)
+                sb.append("\nDistance: ").append(Math.round(distance * 100) / 100).append("m");
         }
 
         return sb.toString();
