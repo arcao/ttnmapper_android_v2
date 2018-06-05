@@ -258,7 +258,7 @@ public class Packet {
 
             float distance = -1;
 
-            if (gateway.getLatitude() == 0 || gateway.getLongitude() == 0 || latitude == 0 || longitude == 0) {
+            if (gateway.getLatitude() != 0 && gateway.getLongitude() != 0 && latitude != 0 && longitude != 0) {
                 Location locationA = new Location("");
                 locationA.setLatitude(gateway.getLatitude());
                 locationA.setLongitude(gateway.getLongitude());
