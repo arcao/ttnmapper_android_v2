@@ -28,6 +28,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -223,7 +224,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             AlertDialog.Builder builder1 = new AlertDialog.Builder(MapsActivity.this);
             builder1.setMessage(Html.fromHtml("<b>Do you want to link this device for mapping?</b><br /><br />" +
                     "<b>AppID:</b> " + data.getQueryParameter("appid") + "<br />" +
-                    "<b>Handler:</b> " + data.getQueryParameter("handler")+"<br />" +
+                    "<b>Handler:</b> " + data.getQueryParameter("handler") + "<br />" +
                     "<b>DevID:</b> " + data.getQueryParameter("devid")));
             builder1.setCancelable(true);
 
@@ -655,12 +656,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     title.setTypeface(null, Typeface.BOLD);
                     title.setText(marker.getTitle());
 
-                    TextView snippet = new TextView(context);
-                    snippet.setTextColor(Color.GRAY);
-                    snippet.setText(marker.getSnippet());
-
                     info.addView(title);
-                    info.addView(snippet);
+
+                    if (!TextUtils.isEmpty(marker.getSnippet())) {
+                        TextView snippet = new TextView(context);
+                        snippet.setTextColor(Color.GRAY);
+                        snippet.setText(marker.getSnippet());
+
+                        info.addView(snippet);
+                    }
 
                     return info;
                 }
@@ -803,11 +807,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void addLastMeasurementToMap() {
-        if (mMap == null) return;
+        if (mMap == null)
+            return;
 
         SharedPreferences myPrefs = this.getSharedPreferences(SettingConstants.PREFERENCES, MODE_PRIVATE);
         MyApplication mApplication = (MyApplication) getApplicationContext();
-        if (mApplication.lastPacket == null) return;
+        if (mApplication.lastPacket == null)
+            return;
 
         Packet packet = mApplication.lastPacket;
         addMeasurementMarker(packet);
@@ -859,7 +865,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     "RSSI: " + packet.getMaxRssi() + "dBm (max)\n" +
                     "SNR: " + packet.getMaxSnr() + "dB (max)\n" +
                     "Distance: " + Math.round(packet.getMaxDistance() * 100) / 100 + "m (max)\n" +
-                    "Channel: " + packet.getFormattedUplinkChannel()
+                    "Channel: " + packet.getFormattedUplinkChannel() + "\n\n" +
+                    packet.getGatewaysInfo()
+
             );
         } else if (packet.getGateways().size() == 1) {
             options.snippet("Received by: " + packet.getGateways().get(0).gatewayID + "\n" +

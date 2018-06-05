@@ -249,4 +249,36 @@ public class Packet {
     private int getUplinkChannel() {
         return TTNFrequencies.getUplinkChannel(frequency);
     }
+
+    public String getGatewaysInfo() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Gateway gateway : gateways) {
+            if (sb.length() > 0) sb.append("\n\n");
+
+            float distance = 0;
+
+            if (gateway.getLatitude() == 0 || gateway.getLongitude() == 0 || latitude == 0 || longitude == 0) {
+                Location locationA = new Location("");
+                locationA.setLatitude(gateway.getLatitude());
+                locationA.setLongitude(gateway.getLongitude());
+
+                Location locationB = new Location("");
+                locationB.setLatitude(latitude);
+                locationB.setLongitude(longitude);
+
+                distance = locationA.distanceTo(locationB);
+            }
+
+
+            sb.append(gateway.gatewayID).append("\n");
+            sb.append("RSSI: ").append(gateway.rssi).append("dBm\n");
+            sb.append("SNR: ").append(gateway.snr).append("dBm\n");
+
+            if (distance > 0)
+                sb.append("Distance: ").append(Math.round(distance * 100) / 100).append("m\n");
+        }
+
+        return sb.toString();
+    }
 }
